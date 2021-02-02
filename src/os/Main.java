@@ -6,6 +6,7 @@ import os.AlgorithmScheduling.RR;
 import os.AlgorithmScheduling.SJF;
 import os.Enum.Priority;
 import os.Enum.Resource;
+import os.Enum.StateCore;
 import os.Enum.StateTask;
 
 import java.util.*;
@@ -26,19 +27,19 @@ public class Main {
         CPU cpu = new CPU();
         while (queueScheduling.getReadyTask().size() != 0 && queueScheduling.getWaitingTask().size() != 0) {
             //sort by Scheduling
-            algorithm.runScheduling(queueScheduling);
-
-//            for (int i = 0; i < queueScheduling.getReadyTask().size(); i++) {
-//                Task task = queueScheduling.getReadyTask().peek();
-//                if (Objects.requireNonNull(task).canAssigned()) {
-//
-//                } else {
-//                    Queue<Task> queue = queueScheduling.getWaitingTask();
-//                    queue.add(task);
-//                    queueScheduling.setWaitingTask(queue);
-//                }
-//            }
-
+            Task task = queueScheduling.getReadyTask().peek();
+            for (int i = 0; i < cpu.getCores().length; i++) {
+                if (Objects.requireNonNull(task).canAssigned(resourceMap)) {
+                    if (cpu.getCores()[i].getStateCore().equals(StateCore.IDLE)) {
+                        cpu.getCores()[i].setActiveTask(task);
+                        queueScheduling.getReadyTask().poll();
+                    }
+                } else {
+                    Queue<Task> queue = queueScheduling.getWaitingTask();
+                    queue.add(task);
+                    queueScheduling.setWaitingTask(queue);
+                }
+            }
         }
     }
 

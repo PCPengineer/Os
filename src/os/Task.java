@@ -84,9 +84,17 @@ public class Task {
     public boolean isAssigned() {
         return isAssigned;
     }
-    public boolean canAssigned(){
-        return true;
+
+    public boolean canAssigned(HashMap<Resource, Integer> currentResource) {
+        if (needed.get(Resource.A) <= currentResource.get(Resource.A)) {
+            if (needed.get(Resource.B) <= currentResource.get(Resource.B)) {
+                return needed.get(Resource.C) < currentResource.get(Resource.C);
+            }
+        }
+        return false;
+
     }
+
     public void setAssigned(boolean assigned) {
         isAssigned = assigned;
     }
