@@ -29,15 +29,15 @@ public class Main {
             //sort by Scheduling
             Task task = queueScheduling.getReadyTask().peek();
             for (int i = 0; i < cpu.getCores().length; i++) {
-                if (Objects.requireNonNull(task).canAssigned(resourceMap)) {
-                    if (cpu.getCores()[i].getStateCore().equals(StateCore.IDLE)) {
+                if (cpu.getCores()[i].getStateCore().equals(StateCore.IDLE)) {
+                    if (Objects.requireNonNull(task).canAssigned(resourceMap)) {
                         cpu.getCores()[i].setActiveTask(task);
-                        queueScheduling.getReadyTask().poll();
+                    } else {
+                        Queue<Task> queue = queueScheduling.getWaitingTask();
+                        queue.add(task);
+                        queueScheduling.setWaitingTask(queue);
                     }
-                } else {
-                    Queue<Task> queue = queueScheduling.getWaitingTask();
-                    queue.add(task);
-                    queueScheduling.setWaitingTask(queue);
+                    queueScheduling.getReadyTask().poll();
                 }
             }
         }

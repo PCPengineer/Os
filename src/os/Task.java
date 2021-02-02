@@ -11,6 +11,7 @@ public class Task {
     private boolean isAssigned = false;
     private StateTask state;
     private int untilTime;
+    private int lastWaitingTime = 0;
     private Priority priority;
     private String name;
     private final HashMap<Resource, Integer> needed;
@@ -97,6 +98,14 @@ public class Task {
 
     public void setAssigned(boolean assigned) {
         isAssigned = assigned;
+    }
+
+    public int getLastWaitingTime() {
+        return lastWaitingTime;
+    }
+
+    public void setLastWaitingTime(int lastWaitingTime) {
+        this.lastWaitingTime = lastWaitingTime;
     }
 
     @Override
