@@ -86,13 +86,34 @@ public class Task {
         return isAssigned;
     }
 
-    public boolean canAssigned(HashMap<Resource, Integer> currentResource) {
-        if (needed.get(Resource.A) <= currentResource.get(Resource.A)) {
-            if (needed.get(Resource.B) <= currentResource.get(Resource.B)) {
-                return needed.get(Resource.C) < currentResource.get(Resource.C);
-            }
+    public boolean checkResource(HashMap<Resource, Integer> currentResource) {
+        int a,b,c;
+        if (needed.get(Resource.A)==null) {
+            a=0;
+        }else{
+            a=needed.get(Resource.A);
         }
-        return false;
+        if (needed.get(Resource.B)==null) {
+            b=0;
+        }else{
+            b=needed.get(Resource.B);
+        }
+        if (needed.get(Resource.C)==null) {
+            c=0;
+        }else{
+            c=needed.get(Resource.C);
+        }
+        boolean a1=false,b1=false,c1=false;
+        if (a==0||(a!=0 && a<=currentResource.get(Resource.A))) {
+            a1=true;
+        }
+        if (b==0||(b!=0 && b<=currentResource.get(Resource.B))) {
+            b1=true;
+        }
+        if (c==0||(c!=0 && c<=currentResource.get(Resource.C)) ) {
+            c1=true;
+        }
+        return a1&&b1&&c1;
 
     }
 

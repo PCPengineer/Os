@@ -1,11 +1,12 @@
 package os.AlgorithmScheduling;
 
-import os.QueueScheduling;
+import java.util.Queue;
+import os.Task;
 
 public class RR extends Algorithm {
 
     @Override
-    public void runScheduling(QueueScheduling queueScheduling) {
-
+    public void runScheduling(Queue<Task> readyQueue) {
+        
     }
 }
