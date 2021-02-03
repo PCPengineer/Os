@@ -11,7 +11,7 @@ public class SJF extends Algorithm {
     @Override
     public void runScheduling(Queue<Task> readyQueue) {
         ArrayList<Task> tasks = new ArrayList<>(readyQueue);
-        Collections.sort(tasks, new Comparator<Task>() {
+        tasks.sort(new Comparator<Task>() {
             @Override
             public int compare(Task o1, Task o2) {
 

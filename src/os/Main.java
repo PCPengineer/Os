@@ -23,14 +23,15 @@ public class Main {
         init();
         start();
     }
-/*
-t1 Y 6
-t2 Y 6
-t3 Y 6
-t4 Y 6
-t5 Y 6
-t6 Y 6
-    */
+
+    /*
+    t1 Y 6
+    t2 Y 6
+    t3 Y 6
+    t4 Y 6
+    t5 Y 6
+    t6 Y 6
+        */
     private static void start() {
         CPU cpu = new CPU();
         Time time = new Time();
@@ -41,7 +42,7 @@ t6 Y 6
             algorithm.runScheduling(Queues.readyTask);
         } else if (algorithm instanceof RR) {
             System.out.println("!!!!!!!!!!!!!!!!");
-            RR.isRR=true;
+            RR.isRR = true;
         }
         while (!Queues.readyTask.isEmpty() || !Queues.waitingTask.isEmpty() || existIdleCore(cpu)) {
             System.out.println("READY BEFORE WAITING: " + Queues.readyTask);
@@ -106,10 +107,13 @@ t6 Y 6
         switch (temp) {
             case 1:
                 algorithm = new FCFS();
+                break;
             case 2:
                 algorithm = new RR();
+                break;
             case 3:
                 algorithm = new SJF();
+                break;
         }
 
     }
