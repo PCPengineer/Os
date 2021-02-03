@@ -23,27 +23,38 @@ public class Main {
         init();
         start();
     }
-
+/*
+t1 Y 6
+t2 Y 6
+t3 Y 6
+t4 Y 6
+t5 Y 6
+t6 Y 6
+    */
     private static void start() {
         CPU cpu = new CPU();
         Time time = new Time();
         WaitingScheduler waitingScheduling = new WaitingScheduler();
         cpu.printCoresData();
         Time.time++;
-        if (algorithm instanceof FCFS || algorithm instanceof SJF){
+        if (algorithm instanceof FCFS || algorithm instanceof SJF) {
             algorithm.runScheduling(Queues.readyTask);
+        } else if (algorithm instanceof RR) {
+            System.out.println("!!!!!!!!!!!!!!!!");
+            RR.isRR=true;
         }
         while (!Queues.readyTask.isEmpty() || !Queues.waitingTask.isEmpty() || existIdleCore(cpu)) {
+            System.out.println("READY BEFORE WAITING: " + Queues.readyTask);
+
             if (existIdleCore(cpu) && checkWaitingTasksResources()) {
                 waitingScheduling.runScheduling(Queues.waitingTask);
                 Task waitedTask = Queues.waitingTask.peek();
                 assert waitedTask != null;
                 Assigner.waitingToReady(waitedTask);
                 Queues.waitingTask.remove();
-
             }
-            //TODO runrobib scheduling
-//            algorithm.runScheduling(Queues.readyTask);
+            System.out.println("READY AFTER WAITING: " + Queues.readyTask);
+
             for (Core core : cpu.getCores()) {
                 if (core.getStateCore().equals(StateCore.IDLE)) {
                     Task headTask = Queues.readyTask.peek();

@@ -27,15 +27,18 @@ public class CPU {
     public void runCores() {
         Task tempTask;
         StateCore tempStateCore;
+        int tempQuantom;
         for (int i = 0; i < cores.length; i++) {
             try {
                 cores[i].start();
                 cores[i].join();
                 tempTask = cores[i].getActiveTask();
                 tempStateCore=cores[i].getStateCore();
+                tempQuantom=cores[i].getQuantom();
                 cores[i] = new Core();
                 cores[i].setActiveTask(tempTask);
                 cores[i].setStateCore(tempStateCore);
+                cores[i].setQuantom(tempQuantom);
             } catch (InterruptedException ex) {
                 Logger.getLogger(CPU.class.getName()).log(Level.SEVERE, null, ex);
             }

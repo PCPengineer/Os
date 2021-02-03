@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 
 import org.omg.IOP.TAG_ALTERNATE_IIOP_ADDRESS;
+import os.Queues;
 import os.ResourceMap;
 import os.Task;
 
@@ -68,7 +69,7 @@ public class WaitingScheduler extends Algorithm {
         waitingQueue.addAll(taskAllowResource);
         waitingQueue.addAll(tasksNotAllowResource);
 
-
+        
     }
 
 }
