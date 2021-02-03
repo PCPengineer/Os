@@ -45,8 +45,12 @@ public class CPU {
 
     public void printCoresData() {
         System.out.println("time: " + Time.time);
+        System.out.println("Waiting Queue: "+Queues.waitingTask);
+        System.out.println("Ready Queue: "+Queues.readyTask);
+        System.out.println("Terminated Queue: "+Queues.terminateTask);
         for (Core core : cores) {
             System.out.println("Core " + core.getName() + ": state=" + core.getStateCore() + " task=" + core.getActiveTask());
         }
+        System.out.println();
     }
 }

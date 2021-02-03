@@ -28,6 +28,8 @@ public class Main {
         CPU cpu = new CPU();
         Time time = new Time();
         WaitingScheduler waitingScheduling = new WaitingScheduler();
+        cpu.printCoresData();
+        Time.time++;
         if (algorithm instanceof FCFS || algorithm instanceof SJF){
             algorithm.runScheduling(Queues.readyTask);
         }
@@ -57,8 +59,8 @@ public class Main {
                     }
                 }
             }
-            cpu.runCores();
             cpu.printCoresData();
+            cpu.runCores();
             time.nextTime();
         }
     }
