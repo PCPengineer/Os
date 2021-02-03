@@ -19,8 +19,7 @@ public class WaitingScheduler extends Algorithm {
     public void runScheduling(Queue<Task> waitingQueue) {
         ArrayList<Task> tasksNotAllowResource = new ArrayList<>();
         ArrayList<Task> taskAllowResource = new ArrayList<>();
-        for (Task task : waitingQueue
-        ) {
+        for (Task task : waitingQueue) {
             if (task.checkResource(ResourceMap.map)) {
                 taskAllowResource.add(waitingQueue.poll());
             } else {
