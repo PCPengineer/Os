@@ -6,12 +6,13 @@
 package os;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import os.Enum.Resource;
 import os.Enum.StateCore;
 import os.Enum.StateTask;
 
 /**
- *
  * @author Aref
  */
 public class Assigner {
@@ -21,13 +22,22 @@ public class Assigner {
         headTask.setState(StateTask.Running);
         c.assignTask(headTask);
         c.setStateCore(StateCore.WORKING);
-        //TODO: reduce resources when they used
+        for (Map.Entry me : headTask.getNeeded().entrySet()) {
+            int valueMap = ResourceMap.map.get(me.getKey());
+            int valueNeed = (int) me.getValue();
+            ResourceMap.map.put((Resource) me.getKey(), valueMap - valueNeed);
+        }
     }
 
     public static void runingToReady(Task task) {
         task.setAssigned(false);
         task.setState(StateTask.READY);
         Queues.readyTask.add(task);
+        for (Map.Entry me : task.getNeeded().entrySet()) {
+            int valueMap = ResourceMap.map.get(me.getKey());
+            int valueNeed = (int) me.getValue();
+            ResourceMap.map.put((Resource) me.getKey(), valueMap + valueNeed);
+        }
     }
 
     public static void readyToWaiting(Task task) {
@@ -45,7 +55,12 @@ public class Assigner {
     public static void runingToTerminate(Task task) {
         task.setState(StateTask.Terminate);
         task.setAssigned(false);
-        Queues.terminateTask.add(task); 
+        Queues.terminateTask.add(task);
+        for (Map.Entry me : task.getNeeded().entrySet()) {
+            int valueMap = ResourceMap.map.get(me.getKey());
+            int valueNeed = (int) me.getValue();
+            ResourceMap.map.put((Resource) me.getKey(), valueMap + valueNeed);
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package os;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import os.Enum.StateCore;
 
 public class Core extends Thread {
@@ -38,20 +39,20 @@ public class Core extends Thread {
     @Override
     public void run() {
         super.run();
-            if (activeTask == null) {
-                return;
-            }
-            activeTask.setUntilTime(activeTask.getUntilTime() + 1);
-            if (activeTask.getTaskDuration() == activeTask.getUntilTime()) {
-                Assigner.runingToTerminate(activeTask);
-                stateCore = StateCore.IDLE;
-                activeTask=null;
-            }
-            if (interrupt) {
-                Assigner.runingToReady(activeTask);
-                interrupt = false;
-                stateCore = StateCore.IDLE;
-                activeTask=null;
-            }
+        if (activeTask == null) {
+            return;
+        }
+        activeTask.setUntilTime(activeTask.getUntilTime() + 1);
+        if (activeTask.getTaskDuration() == activeTask.getUntilTime()) {
+            Assigner.runingToTerminate(activeTask);
+            stateCore = StateCore.IDLE;
+            activeTask = null;
+        }
+        if (interrupt) {
+            Assigner.runingToReady(activeTask);
+            interrupt = false;
+            stateCore = StateCore.IDLE;
+            activeTask = null;
+        }
     }
 }
