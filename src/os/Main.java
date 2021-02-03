@@ -41,12 +41,9 @@ public class Main {
         if (algorithm instanceof FCFS || algorithm instanceof SJF) {
             algorithm.runScheduling(Queues.readyTask);
         } else if (algorithm instanceof RR) {
-            System.out.println("!!!!!!!!!!!!!!!!");
             RR.isRR = true;
         }
         while (!Queues.readyTask.isEmpty() || !Queues.waitingTask.isEmpty() || existIdleCore(cpu)) {
-            System.out.println("READY BEFORE WAITING: " + Queues.readyTask);
-
             if (existIdleCore(cpu) && checkWaitingTasksResources()) {
                 waitingScheduling.runScheduling(Queues.waitingTask);
                 Task waitedTask = Queues.waitingTask.peek();
@@ -54,8 +51,6 @@ public class Main {
                 Assigner.waitingToReady(waitedTask);
                 Queues.waitingTask.remove();
             }
-            System.out.println("READY AFTER WAITING: " + Queues.readyTask);
-
             for (Core core : cpu.getCores()) {
                 if (core.getStateCore().equals(StateCore.IDLE)) {
                     Task headTask = Queues.readyTask.peek();

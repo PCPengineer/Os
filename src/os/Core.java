@@ -66,20 +66,23 @@ public class Core extends Thread {
             return;
         }
         activeTask.setUntilTime(activeTask.getUntilTime() + 1);
-        if (activeTask.getTaskDuration() == activeTask.getUntilTime()) {
-            Assigner.runingToTerminate(activeTask);
-            stateCore = StateCore.IDLE;
-            activeTask = null;
-        }
         
         if (RR.isRR) {
-            System.out.println("ksabfksjdbfksbdjfbsjdvfjshdvfjshdvfjsbdfjhsdkfbsjdfhbsjdfbsjdhvbfj");
             quantom--;
             if (quantom==0) {
                 quantom=RR.INIT_QUANTOM;
                 interrupt=true;
             }
         }
+        
+        if (activeTask.getTaskDuration() == activeTask.getUntilTime()) {
+            Assigner.runingToTerminate(activeTask);
+            stateCore = StateCore.IDLE;
+            activeTask = null;
+            return;
+        }
+        
+        
         
         if (interrupt) {
             Assigner.runingToReady(activeTask);
