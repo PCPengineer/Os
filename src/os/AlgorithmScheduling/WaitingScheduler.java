@@ -6,6 +6,7 @@
 package os.AlgorithmScheduling;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 
 import org.omg.IOP.TAG_ALTERNATE_IIOP_ADDRESS;
@@ -20,13 +21,15 @@ public class WaitingScheduler extends Algorithm {
     public void runScheduling(Queue<Task> waitingQueue) {
         ArrayList<Task> tasksNotAllowResource = new ArrayList<>();
         ArrayList<Task> taskAllowResource = new ArrayList<>();
-        for (Task task : waitingQueue) {
+        ArrayList<Task> waitingQueueList = new ArrayList<>(waitingQueue);
+        for (Task task : waitingQueueList) {
             if (task.checkResource(ResourceMap.map)) {
-                taskAllowResource.add(waitingQueue.poll());
+                taskAllowResource.add(task);
             } else {
-                tasksNotAllowResource.add(waitingQueue.poll());
+                tasksNotAllowResource.add(task);
             }
         }
+        waitingQueue = new LinkedList<>();
 
         for (int i = 0; i < taskAllowResource.size(); i++) {
             int wait1 = taskAllowResource.get(i).getLastWaitingTime();
@@ -69,7 +72,7 @@ public class WaitingScheduler extends Algorithm {
         waitingQueue.addAll(taskAllowResource);
         waitingQueue.addAll(tasksNotAllowResource);
 
-        
+
     }
 
 }

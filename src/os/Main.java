@@ -1,9 +1,7 @@
 package os;
 
-import os.AlgorithmScheduling.Algorithm;
-import os.AlgorithmScheduling.FCFS;
-import os.AlgorithmScheduling.RR;
-import os.AlgorithmScheduling.SJF;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+import os.AlgorithmScheduling.*;
 import os.Enum.Priority;
 import os.Enum.Resource;
 import os.Enum.StateCore;
@@ -11,13 +9,12 @@ import os.Enum.StateTask;
 
 import java.util.*;
 
-import os.AlgorithmScheduling.WaitingScheduler;
-
 public class Main {
 
     private static final int allTime = 0;
     private static final Scanner sc = new Scanner(System.in);
     private static Algorithm algorithm;
+    public static boolean isMultilevel = false;
 
     public static void main(String[] args) {
         init();
@@ -26,11 +23,11 @@ public class Main {
 
     /*
     t1 Y 6
-    t2 Y 6
-    t3 Y 6
-    t4 Y 6
-    t5 Y 6
-    t6 Y 6
+    t2 Y 5
+    t3 Y 4
+    t4 Y 3
+    t5 Y 2
+    t6 Y 1
         */
     private static void start() {
         CPU cpu = new CPU();
@@ -51,18 +48,52 @@ public class Main {
                 Assigner.waitingToReady(waitedTask);
                 Queues.waitingTask.remove();
             }
+            if (algorithm instanceof HRRN) {
+                algorithm.runScheduling(Queues.readyTask);
+            }
             for (Core core : cpu.getCores()) {
                 if (core.getStateCore().equals(StateCore.IDLE)) {
-                    Task headTask = Queues.readyTask.peek();
-                    if (headTask == null) {
-                        continue;
-                    }
-                    if (headTask.checkResource(ResourceMap.map)) {
-                        Assigner.readyToRunning(core, headTask);
-                        Queues.readyTask.remove();
+                    if (isMultilevel) {
+                        Task headTask;
+                        if (Time.time % 5 >= 3) {
+                            MultilevelQueue.isMultilevelRR = false;
+                            headTask = Queues.backgroundFCFS.peek();
+                            if (headTask == null) {
+                                continue;
+                            }
+                            if (headTask.checkResource(ResourceMap.map)) {
+                                Assigner.readyToRunning(core, headTask);
+                                Queues.backgroundFCFS.remove();
+                            } else {
+                                Assigner.readyToWaiting(headTask);
+                                Queues.backgroundFCFS.remove();
+                            }
+                        } else {
+                            MultilevelQueue.isMultilevelRR = true;
+                            headTask = Queues.foregroundRR.peek();
+                            if (headTask == null) {
+                                continue;
+                            }
+                            if (headTask.checkResource(ResourceMap.map)) {
+                                Assigner.readyToRunning(core, headTask);
+                                Queues.foregroundRR.remove();
+                            } else {
+                                Assigner.readyToWaiting(headTask);
+                                Queues.foregroundRR.remove();
+                            }
+                        }
                     } else {
-                        Assigner.readyToWaiting(headTask);
-                        Queues.readyTask.remove();
+                        Task headTask = Queues.readyTask.peek();
+                        if (headTask == null) {
+                            continue;
+                        }
+                        if (headTask.checkResource(ResourceMap.map)) {
+                            Assigner.readyToRunning(core, headTask);
+                            Queues.readyTask.remove();
+                        } else {
+                            Assigner.readyToWaiting(headTask);
+                            Queues.readyTask.remove();
+                        }
                     }
                 }
             }
@@ -79,25 +110,60 @@ public class Main {
         ResourceMap.map.put(Resource.A, sc.nextInt());
         ResourceMap.map.put(Resource.B, sc.nextInt());
         ResourceMap.map.put(Resource.C, sc.nextInt());
-        System.out.println("Please Enter Number of Tasks");
-        int numberTask = sc.nextInt();
-        System.out.println("Please Enter Information of Tasks");
-        for (int i = 0; i < numberTask; i++) {
-            if (i == 0) {
-                sc.nextLine();
-            }
-            String eachTask = sc.nextLine();
-            String[] eachInfo = eachTask.split(" ");//0 name  1 priority 2 taskDuration
-            int taskDuration = Integer.parseInt(eachInfo[2]);
-            Queues.readyTask.add(new Task(StateTask.READY,
-                    eachInfo[1].equals("X") ? Priority.X : (eachInfo[1].equals("Y") ? Priority.Y : (eachInfo[1].equals("Z") ? Priority.Z : Priority.X)),
-                    eachInfo[0], taskDuration));
-        }
+        sc.nextLine();
         initScheduling();
+
+        if (isMultilevel) {
+            System.out.println("Please Enter Number of Tasks Foreground");
+            int numberTaskForeground = sc.nextInt();
+            System.out.println("Please Enter Information of Tasks Foreground");
+            for (int i = 0; i < numberTaskForeground; i++) {
+                if (i == 0) {
+                    sc.nextLine();
+                }
+                String eachTask = sc.nextLine();
+                String[] eachInfo = eachTask.split(" ");//0 name  1 priority 2 taskDuration
+                int taskDuration = Integer.parseInt(eachInfo[2]);
+                Queues.foregroundRR.add(new Task(StateTask.READY,
+                        eachInfo[1].equals("X") ? Priority.X : (eachInfo[1].equals("Y") ? Priority.Y : (eachInfo[1].equals("Z") ? Priority.Z : Priority.X)),
+                        eachInfo[0], taskDuration));
+            }
+            System.out.println("Please Enter Number of Tasks Background");
+            int numberTaskBackground = sc.nextInt();
+            System.out.println("Please Enter Information of Tasks Background");
+            for (int i = 0; i < numberTaskBackground; i++) {
+                if (i == 0) {
+                    sc.nextLine();
+                }
+                String eachTask = sc.nextLine();
+                String[] eachInfo = eachTask.split(" ");//0 name  1 priority 2 taskDuration
+                int taskDuration = Integer.parseInt(eachInfo[2]);
+                Queues.backgroundFCFS.add(new Task(StateTask.READY,
+                        eachInfo[1].equals("X") ? Priority.X : (eachInfo[1].equals("Y") ? Priority.Y : (eachInfo[1].equals("Z") ? Priority.Z : Priority.X)),
+                        eachInfo[0], taskDuration));
+            }
+
+
+        } else {
+            System.out.println("Please Enter Number of Tasks");
+            int numberTask = sc.nextInt();
+            System.out.println("Please Enter Information of Tasks");
+            for (int i = 0; i < numberTask; i++) {
+                if (i == 0) {
+                    sc.nextLine();
+                }
+                String eachTask = sc.nextLine();
+                String[] eachInfo = eachTask.split(" ");//0 name  1 priority 2 taskDuration
+                int taskDuration = Integer.parseInt(eachInfo[2]);
+                Queues.readyTask.add(new Task(StateTask.READY,
+                        eachInfo[1].equals("X") ? Priority.X : (eachInfo[1].equals("Y") ? Priority.Y : (eachInfo[1].equals("Z") ? Priority.Z : Priority.X)),
+                        eachInfo[0], taskDuration));
+            }
+        }
     }
 
     private static void initScheduling() {
-        System.out.println("Please Enter Your Algorithm :\n  1)FCFS  \n 2)RR  \n 3)SJF");
+        System.out.println("Please Enter Your Algorithm :\n 1)FCFS  \n 2)RR  \n 3)SJF \n 4)Multilevel Queue \n 5)HRRN");
         int temp = sc.nextInt();
         switch (temp) {
             case 1:
@@ -108,6 +174,13 @@ public class Main {
                 break;
             case 3:
                 algorithm = new SJF();
+                break;
+            case 4:
+                algorithm = new MultilevelQueue();
+                isMultilevel = true;
+                break;
+            case 5:
+                algorithm = new HRRN();
                 break;
         }
 

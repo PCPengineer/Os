@@ -8,6 +8,7 @@ package os;
 import java.util.HashMap;
 import java.util.Map;
 
+import os.AlgorithmScheduling.MultilevelQueue;
 import os.Enum.Resource;
 import os.Enum.StateCore;
 import os.Enum.StateTask;
@@ -30,14 +31,26 @@ public class Assigner {
     }
 
     public static void runingToReady(Task task) {
-        task.setAssigned(false);
-        task.setState(StateTask.READY);
-        Queues.readyTask.add(task);
+        selectedQueue(task);
         for (Map.Entry me : task.getNeeded().entrySet()) {
             int valueMap = ResourceMap.map.get(me.getKey());
             int valueNeed = (int) me.getValue();
             ResourceMap.map.put((Resource) me.getKey(), valueMap + valueNeed);
         }
+    }
+
+    private static void selectedQueue(Task task) {
+        task.setAssigned(false);
+        task.setState(StateTask.READY);
+        if (Main.isMultilevel && MultilevelQueue.isMultilevelRR) {
+            Queues.foregroundRR.add(task);
+            return;
+        }
+        if (Main.isMultilevel) {
+            Queues.backgroundFCFS.add(task);
+            return;
+        }
+        Queues.readyTask.add(task);
     }
 
     public static void readyToWaiting(Task task) {
@@ -47,9 +60,7 @@ public class Assigner {
     }
 
     public static void waitingToReady(Task task) {
-        task.setAssigned(false);
-        task.setState(StateTask.READY);
-        Queues.readyTask.add(task);
+        selectedQueue(task);
     }
 
     public static void runingToTerminate(Task task) {
