@@ -40,7 +40,7 @@ public class Main {
         } else if (algorithm instanceof RR) {
             RR.isRR = true;
         }
-        while (!Queues.readyTask.isEmpty() || !Queues.waitingTask.isEmpty() || existIdleCore(cpu)) {
+        while (!isReadyEmpty() || !Queues.waitingTask.isEmpty() || existIdleCore(cpu)) {
             if (existIdleCore(cpu) && checkWaitingTasksResources()) {
                 waitingScheduling.runScheduling(Queues.waitingTask);
                 Task waitedTask = Queues.waitingTask.peek();
@@ -206,6 +206,14 @@ public class Main {
             }
         }
         return false;
+    }
+    
+    private static boolean isReadyEmpty(){
+        if (isMultilevel) {
+            return Queues.foregroundRR.isEmpty()&&Queues.backgroundFCFS.isEmpty();
+        }else {
+            return Queues.readyTask.isEmpty();
+        }
     }
 
 }
